@@ -46,16 +46,15 @@ export function preparationRule(grade:string){const high=/A|B|C/.test(grade)&&!g
 
 export type MonthlyRequirement={label:string;chemical:string;count:number};
 export function monthlyRequirements(area:Area,year:number,month:number):MonthlyRequirement[]{
- const days=new Date(year,month,0).getDate(),odd=month%2===1;
+ const odd=month%2===1;
  if(area.program==="NA")return[];
  if(area.program==="Riêng"){
-  const rows:MonthlyRequirement[]=[{label:"Hàng ngày",chemical:"Ethanol 70%",count:days}];
+  const rows:MonthlyRequirement[]=[];
   if(area.rule?.includes("H₂O₂ 3% hàng tháng"))rows.push({label:"Hàng tháng",chemical:"H₂O₂ 3%",count:1});
   if(area.rule?.includes("Cloramin B hàng quý")&&[3,6,9,12].includes(month))rows.push({label:"Hàng quý",chemical:"Cloramin B 1%",count:1});
   return rows;
  }
  const rows:MonthlyRequirement[]=[
-  {label:"Hàng ngày",chemical:"Ethanol 70%",count:days},
   {label:"Tuần 1 và 3",chemical:"Vesphene II se Cleaner/Nước 0,8%",count:2},
   {label:"Tuần 2 và 4",chemical:"LPH/Nước 0,4%",count:2},
  ];
