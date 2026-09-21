@@ -14,6 +14,24 @@ export const chemicals:Chemical[]=[
 export const areas:Area[]=[
  {code:"C1",name:"Phân xưởng BFS",grade:"C & D",risk:"Thấp",program:"1"},{code:"C2",name:"Phân xưởng sản phẩm dạng uống",grade:"D",risk:"Thấp",program:"1"},{code:"C3",name:"Phân xưởng sản phẩm không vô trùng",grade:"D",risk:"Thấp",program:"2"},{code:"C4",name:"Phân xưởng sản phẩm vô trùng",grade:"C & D",risk:"Thấp",program:"1"},{code:"C5",name:"Hoàn thiện xưởng hóa dược",grade:"CNC",risk:"Thấp",program:"Riêng",rule:"Ethanol 70% hàng ngày; H₂O₂ 3% hàng tháng; Cloramin B hàng quý"},{code:"F2",name:"Xưởng thạch",grade:"D",risk:"Cao",program:"2"},{code:"B1",name:"Xưởng sinh phẩm",grade:"D",risk:"Cao",program:"2"},{code:"B2",name:"Xưởng sinh phẩm",grade:"D",risk:"Cao",program:"2"},{code:"B3",name:"Thành phẩm sinh phẩm",grade:"D",risk:"Cao",program:"2"},{code:"A1",name:"Cân chung",grade:"D",risk:"Thấp",program:"1"},{code:"A2",name:"Lấy mẫu nguyên liệu",grade:"D",risk:"Thấp",program:"1"},{code:"E1",name:"Phụ trợ cơ điện",grade:"CNC",risk:"Thấp",program:"Riêng",rule:"Ethanol 70% hàng ngày"},{code:"Q1",name:"Hóa lý",grade:"CNC",risk:"Thấp",program:"Riêng",rule:"Ethanol 70% hàng ngày"},{code:"Q2",name:"Vi sinh",grade:"D & B",risk:"Cao",program:"2"},{code:"Q3",name:"Mediafill",grade:"CNC",risk:"Thấp",program:"Riêng",rule:"Ethanol 70% hàng ngày"},{code:"Q4",name:"Chung",grade:"CNC",risk:"Thấp",program:"Riêng",rule:"Ethanol 70% hàng ngày"},{code:"S1",name:"Kho thành phẩm 3000",grade:"CNC",risk:"Thấp",program:"Riêng",rule:"Ethanol 70% hàng ngày"},{code:"S2",name:"Kho nguyên liệu",grade:"CNC",risk:"Thấp",program:"Riêng",rule:"Ethanol 70% hàng ngày; H₂O₂ 3% hàng tháng"},{code:"S3",name:"Kho phụ liệu ngoài",grade:"CNC",risk:"Thấp",program:"NA"},{code:"S4",name:"Kho lạnh sinh phẩm",grade:"CNC",risk:"Cao",program:"Riêng",rule:"Ethanol 70% hàng ngày; H₂O₂ 3% hàng tháng"},{code:"S5",name:"Kho 600",grade:"CNC",risk:"Thấp",program:"NA"},{code:"S6",name:"Kho Upharma",grade:"CNC",risk:"Thấp",program:"NA"},{code:"S7",name:"Kho QC",grade:"CNC",risk:"Thấp",program:"NA"},{code:"S8",name:"Kho QA",grade:"CNC",risk:"Thấp",program:"NA"},{code:"S9",name:"Kho RD",grade:"CNC",risk:"Thấp",program:"NA"},
 ];
+export const programs=[
+ {id:"1",name:"Chương trình 1",applies:"Khu vực rủi ro thấp thuộc chương trình 1",rows:[
+  {frequency:"Tuần 1 và 3",months:"Tất cả các tháng",chemical:"Vesphene II se Cleaner/Nước 0,8%"},
+  {frequency:"Tuần 2 và 4",months:"Tất cả các tháng",chemical:"LPH/Nước 0,4%"},
+  {frequency:"Tổng vệ sinh cuối tháng",months:"1, 3, 5, 7, 9, 11",chemical:"H₂O₂ 3%"},
+  {frequency:"Tổng vệ sinh cuối tháng",months:"2, 4, 6, 8, 10, 12",chemical:"Spor-Klenz RTU"},
+  {frequency:"Hàng ngày",months:"Tất cả các tháng",chemical:"Ethanol 70%"}]},
+ {id:"2",name:"Chương trình 2",applies:"Khu vực chương trình 2; tần suất tổng vệ sinh tăng theo rủi ro",rows:[
+  {frequency:"Tuần 1 và 3",months:"Tất cả các tháng",chemical:"Vesphene II se Cleaner/Nước 0,8%"},
+  {frequency:"Tuần 2 và 4",months:"Tất cả các tháng",chemical:"LPH/Nước 0,4%"},
+  {frequency:"Tổng vệ sinh mỗi 2 tuần hoặc hàng tuần theo mức rủi ro",months:"1, 3, 5, 7, 9, 11",chemical:"H₂O₂ 3%"},
+  {frequency:"Tổng vệ sinh mỗi 2 tuần hoặc hàng tuần theo mức rủi ro",months:"2, 4, 6, 8, 10, 12",chemical:"Spor-Klenz RTU"},
+  {frequency:"Hàng ngày",months:"Tất cả các tháng",chemical:"Ethanol 70%"}]},
+ {id:"special",name:"Chương trình riêng",applies:"Khu vực CNC và kho có tần suất riêng trong PL02",rows:[
+  {frequency:"Hàng ngày",months:"Tất cả các tháng",chemical:"Ethanol 70%"},
+  {frequency:"Hàng tháng",months:"Theo ma trận từng khu vực",chemical:"H₂O₂ 3%"},
+  {frequency:"Hàng quý",months:"Riêng C5",chemical:"Cloramin B 1%"}]},
+];
 export function recommendation(area:Area,date:Date,frequency:"routine"|"periodic"){
  const month=date.getMonth()+1,week=Math.ceil(date.getDate()/7),oddMonth=month%2===1;
  if(area.program==="NA")return {chemical:null,reason:"SOP chưa quy định chương trình cho khu vực này; cần QA xác nhận trước khi thực hiện."};
