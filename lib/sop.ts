@@ -43,3 +43,38 @@ export function recommendation(area:Area,date:Date,frequency:"routine"|"periodic
  return oddMonth?{chemical:chemicals[3],reason:`Chương trình ${area.program}: tháng lẻ dùng H₂O₂ 3%`}:{chemical:chemicals[6],reason:`Chương trình ${area.program}: tháng chẵn dùng Spor-Klenz RTU`};
 }
 export function preparationRule(grade:string){const high=/A|B|C/.test(grade)&&!grade.includes("CNC");return high?{solvent:"Nước cất/WFI",area:"Cấp C trở lên (phòng/LAF/isolator)",treatment:"Lọc vô khuẩn 0,2 µm",utensil:"Tiệt trùng ≥121°C/20 phút"}:{solvent:"Nước tinh khiết",area:"Cấp D",treatment:"Không",utensil:"Thanh trùng ≥80°C/20 phút"}}
+
+export type MonthlyRequirement={label:string;chemical:string;count:number};
+export function monthlyRequirements(area:Area,year:number,month:number):MonthlyRequirement[]{
+ const days=new Date(year,month,0).getDate(),odd=month%2===1;
+ if(area.program==="NA")return[];
+ if(area.program==="Riêng"){
+  const rows:MonthlyRequirement[]=[{label:"Hàng ngày",chemical:"Ethanol 70%",count:days}];
+  if(area.rule?.includes("H₂O₂ 3% hàng tháng"))rows.push({label:"Hàng tháng",chemical:"H₂O₂ 3%",count:1});
+  if(area.rule?.includes("Cloramin B hàng quý")&&[3,6,9,12].includes(month))rows.push({label:"Hàng quý",chemical:"Cloramin B 1%",count:1});
+  return rows;
+ }
+ const rows:MonthlyRequirement[]=[
+  {label:"Hàng ngày",chemical:"Ethanol 70%",count:days},
+  {label:"Tuần 1 và 3",chemical:"Vesphene II se Cleaner/Nước 0,8%",count:2},
+  {label:"Tuần 2 và 4",chemical:"LPH/Nước 0,4%",count:2},
+ ];
+ const periodicCount=area.program==="1"?1:area.risk==="Cao"?4:2;
+ rows.push({label:area.program==="1"?"Cuối tháng":area.risk==="Cao"?"Hàng tuần":"Mỗi 2 tuần",chemical:odd?"H₂O₂ 3%":"Spor-Klenz RTU",count:periodicCount});
+ return rows;
+}
+export function isChemicalCorrect(area:Area,chemicalName:string,usedAt:string){
+ const date=new Date(usedAt),month=date.getMonth()+1,week=Math.ceil(date.getDate()/7),name=chemicalName.toLowerCase();
+ if(area.program==="NA")return false;
+ if(name.includes("ethanol")||name.includes("cồn"))return true;
+ if(area.program==="Riêng"){
+  if(name.includes("h₂o₂")||name.includes("h2o2"))return area.rule?.includes("H₂O₂ 3%")??false;
+  if(name.includes("cloramin"))return area.rule?.includes("Cloramin B")??false;
+  return false;
+ }
+ if(name.includes("vesphene"))return week===1||week===3;
+ if(name.includes("lph"))return week===2||week===4;
+ if(name.includes("spor-klenz"))return month%2===0;
+ if(name.includes("h₂o₂")||name.includes("h2o2"))return month%2===1;
+ return false;
+}
