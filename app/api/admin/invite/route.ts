@@ -7,8 +7,6 @@ const roles=["factory_staff","ipc","admin"] as const;
 export async function POST(request:NextRequest){
  const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,secret=process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY;
  if(!url||!key||!secret)return NextResponse.json({error:"Máy chủ chưa cấu hình Supabase secret key."},{status:500});
- const resendKey=process.env.RESEND_API_KEY,emailFrom=process.env.EMAIL_FROM,siteUrl=(process.env.NEXT_PUBLIC_SITE_URL||request.nextUrl.origin).replace(/\/$/,"");
- if(!resendKey||!emailFrom)return NextResponse.json({error:"Máy chủ chưa cấu hình RESEND_API_KEY hoặc EMAIL_FROM nên chưa thể tạo tài khoản kèm email thông báo."},{status:500});
  const token=request.headers.get("authorization")?.replace(/^Bearer\s+/i,"");
  if(!token)return NextResponse.json({error:"Phiên đăng nhập không hợp lệ."},{status:401});
  const authClient=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}}),admin=createClient(url,secret,{auth:{persistSession:false,autoRefreshToken:false}});
@@ -30,10 +28,5 @@ export async function POST(request:NextRequest){
  if(!accountId)return NextResponse.json({error:"Supabase không trả về tài khoản vừa tạo."},{status:500});
  const {error:profileError}=await admin.from("profiles").upsert({id:accountId,full_name:fullName,role,department_code:departmentCode,area_codes:areaCodes},{onConflict:"id"});
  if(profileError)return NextResponse.json({error:`Đã tạo tài khoản nhưng chưa lưu được phân quyền: ${profileError.message}`},{status:500});
- const roleName=role==="admin"?"Quản trị QA":role==="ipc"?"Nhân viên IPC":"Nhân viên xưởng",scope=role==="admin"?"Toàn hệ thống":`${departments.find(d=>d.code===departmentCode)?.name||departmentCode}${areaCodes.length?` · Khu vực ${areaCodes.join(", ")}`:" · Toàn phòng ban"}`;
- const mail=await fetch("https://api.resend.com/emails",{method:"POST",headers:{Authorization:`Bearer ${resendKey}`,"Content-Type":"application/json"},body:JSON.stringify({from:emailFrom,to:[email],subject:"Tài khoản hệ thống vệ sinh nhà máy đã được tạo",html:`<div style="font-family:Arial,sans-serif;line-height:1.6;color:#17231e"><h2>Tài khoản của bạn đã được tạo</h2><p>Xin chào <strong>${escapeHtml(fullName)}</strong>,</p><p>Quản trị viên đã tạo tài khoản sử dụng hệ thống quản lý vệ sinh nhà máy.</p><ul><li>Email: <strong>${escapeHtml(email)}</strong></li><li>Vai trò: <strong>${roleName}</strong></li><li>Phạm vi: <strong>${escapeHtml(scope)}</strong></li></ul><p>Mật khẩu ban đầu được quản trị viên cung cấp trực tiếp. Sau khi đăng nhập, hãy sử dụng mục <strong>Đổi mật khẩu</strong>.</p><p><a href="${siteUrl}" style="display:inline-block;background:#0a6849;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none">Mở hệ thống</a></p><p>Nếu bạn không yêu cầu tài khoản này, vui lòng liên hệ quản trị viên.</p></div>`})});
- if(!mail.ok){const detail=await mail.text();return NextResponse.json({error:`Đã tạo tài khoản ${email} nhưng gửi email thất bại: ${detail}`},{status:502})}
- return NextResponse.json({message:`Đã tạo tài khoản và gửi email thông báo đến ${email}.`});
+ return NextResponse.json({message:`Đã tạo tài khoản ${email}, xác nhận email và lưu phân quyền. Người dùng có thể đăng nhập ngay.`});
 }
-
-function escapeHtml(value:string){return value.replace(/[&<>'"]/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[char]!))}

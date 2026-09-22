@@ -40,8 +40,6 @@ Tạo repository mới rồi đẩy toàn bộ thư mục dự án lên nhánh `
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
    - `SUPABASE_SECRET_KEY` (secret key mới của Supabase, chỉ dùng phía server)
    - `NEXT_PUBLIC_SITE_URL` (URL production, ví dụ `https://your-project.vercel.app`)
-   - `RESEND_API_KEY` (API key gửi email thông báo, chỉ dùng phía server)
-   - `EMAIL_FROM` (người gửi trên tên miền đã xác minh, ví dụ `Hệ thống vệ sinh <no-reply@cpc1hn.vn>`)
 4. Deploy project. Mỗi lần push GitHub sau đó sẽ tự động triển khai.
 
 ## 4 Lời mời tài khoản Supabase
