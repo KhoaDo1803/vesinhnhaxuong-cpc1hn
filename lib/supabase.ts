@@ -3,7 +3,7 @@ import {createClient,type SupabaseClient} from "@supabase/supabase-js";
 let client:SupabaseClient|null=null;
 const localUser={id:"local-admin",email:"admin@local.test"};
 const seed={
- profiles:[{id:"local-admin",full_name:"Quản trị viên cục bộ",role:"admin",area_codes:[]}],
+ profiles:[{id:"local-admin",full_name:"Quản trị viên cục bộ",role:"admin",department_code:"ADMIN",area_codes:[]}],
  preparation_batches:[],
  cleaning_records:[],
 };
