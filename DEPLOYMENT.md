@@ -38,6 +38,8 @@ Tạo repository mới rồi đẩy toàn bộ thư mục dự án lên nhánh `
 3. Thêm hai biến môi trường:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+   - `SUPABASE_SECRET_KEY` (secret key mới của Supabase, chỉ dùng phía server)
+   - `NEXT_PUBLIC_SITE_URL` (URL production, ví dụ `https://your-project.vercel.app`)
 4. Deploy project. Mỗi lần push GitHub sau đó sẽ tự động triển khai.
 
 ## 4 Lời mời tài khoản Supabase
