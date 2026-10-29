@@ -47,10 +47,26 @@ function localClient(){return{
  from:(table:string)=>new LocalQuery(table),
 }}
 
-export function isLocalDemo(){return!process.env.NEXT_PUBLIC_SUPABASE_URL||!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
+function cleanEnv(value:string|undefined){
+ const trimmed=value?.trim()||"";
+ return trimmed.replace(/^['"]|['"]$/g,"").trim();
+}
+
+function remoteConfig(){
+ const url=cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_URL);
+ const key=cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+ if(!url||!key)return null;
+ try{
+  const parsed=new URL(url);
+  if(parsed.protocol!=="https:"||!parsed.hostname.endsWith(".supabase.co"))return null;
+ }catch{return null}
+ return{url,key};
+}
+
+export function isLocalDemo(){return remoteConfig()===null}
 export function getSupabase():any{
- const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
- if(!url||!key)return localClient();
- if(!client)client=createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+ const config=remoteConfig();
+ if(!config)return localClient();
+ if(!client)client=createClient(config.url,config.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  return client;
 }
